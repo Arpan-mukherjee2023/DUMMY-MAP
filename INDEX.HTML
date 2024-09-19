@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Location on Google Map</title>
+    <style>
+        #map {
+            height: 500px;  /* Set the height of the map */
+            width: 100%;    /* Set the width of the map */
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Location Tracking</h1>
+    <div id="map"></div>
+    <button id="trackLocationBtn">Track My Location</button>
+
+    <script>
+        let map;
+        let marker;
+        const locationIcon = {
+            url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png" // Custom icon for the marker
+        };
+
+        function initMap() {
+            // Set the initial location (fallback)
+            const initialLocation = { lat: 37.7749, lng: -122.4194 }; // Default: San Francisco
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: initialLocation,
+            });
+
+            // Create a marker for the user's location
+            marker = new google.maps.Marker({
+                position: initialLocation,
+                map: map,
+                icon: locationIcon,
+            });
+        }
+
+        document.getElementById('trackLocationBtn').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(function(position) {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    // Update the marker position
+                    marker.setPosition(userLocation);
+                    map.setCenter(userLocation);
+                }, function() {
+                    alert("Unable to retrieve your location.");
+                }, {
+                    enableHighAccuracy: true, // Request high accuracy
+                    maximumAge: 0,
+                    timeout: 10000 // Timeout after 10 seconds
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        });
+    </script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"
+        async
+        defer
+    ></script>
+</body>
+</html>
